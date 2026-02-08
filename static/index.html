@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Viral Reel Recreator</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎬 Viral Reel Recreator</h1>
+            <p class="subtitle">Transform trending reels into product ads</p>
+        </header>
+
+        <main>
+            <!-- Upload Form -->
+            <div id="upload-section" class="card">
+                <h2>Create Your Reel</h2>
+                <form id="upload-form">
+                    <div class="form-group">
+                        <label>
+                            <span class="label-text">Video Source</span>
+                            <span class="label-hint">Upload a file or provide a URL</span>
+                        </label>
+                        <div style="margin-bottom: 15px; display: flex; gap: 20px;">
+                            <label style="display: flex; align-items: center; cursor: pointer;">
+                                <input type="radio" id="source-file" name="source" value="file" checked onchange="toggleSource()" style="margin-right: 8px;">
+                                Upload File
+                            </label>
+                            <label style="display: flex; align-items: center; cursor: pointer;">
+                                <input type="radio" id="source-url" name="source" value="url" onchange="toggleSource()" style="margin-right: 8px;">
+                                Video URL
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="file-upload-group">
+                        <label for="video-file">
+                            <span class="label-text">Upload Trending Reel</span>
+                            <span class="label-hint">MP4 format, max 50MB</span>
+                        </label>
+                        <div class="file-input-wrapper">
+                            <input type="file" id="video-file" name="video_file" accept="video/mp4">
+                            <div class="file-input-display">
+                                <span id="file-name">Choose a file...</span>
+                                <button type="button" class="btn-secondary" onclick="document.getElementById('video-file').click()">Browse</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="url-input-group" style="display: none;">
+                        <label for="video-url">
+                            <span class="label-text">Video URL</span>
+                            <span class="label-hint">YouTube, Instagram, TikTok, or direct video link</span>
+                        </label>
+                        <div class="url-input-row" style="display: flex; gap: 12px; align-items: center;">
+                            <input 
+                                type="url" 
+                                id="video-url" 
+                                name="video_url" 
+                                placeholder="https://www.youtube.com/watch?v=... or https://www.instagram.com/reel/..."
+                                style="flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px;"
+                            >
+                            <button type="button" id="download-url-btn" class="btn-secondary" title="Download this video without creating a reel" style="white-space: nowrap;" disabled>
+                                📥 Download video
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="product-description">
+                            <span class="label-text">Product Description</span>
+                            <span class="label-hint">Describe your product and its benefits</span>
+                        </label>
+                        <textarea 
+                            id="product-description" 
+                            name="product_description" 
+                            rows="4" 
+                            placeholder="e.g., A magnetic cable organizer that keeps your desk clean and organized..."
+                            required
+                        ></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="brand-tone">
+                            <span class="label-text">Brand Tone (Optional)</span>
+                            <span class="label-hint">e.g., playful, professional, modern, energetic</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            id="brand-tone" 
+                            name="brand_tone" 
+                            placeholder="e.g., playful and modern"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="product-images">
+                            <span class="label-text">Product Images (Optional)</span>
+                            <span class="label-hint">Upload multiple product photos (JPEG, PNG, GIF, WebP) for better accuracy</span>
+                        </label>
+                        <input 
+                            type="file" 
+                            id="product-images" 
+                            name="product_images" 
+                            accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                            multiple
+                            style="width: 100%; padding: 12px; border: 2px solid var(--border-color); border-radius: 8px; font-size: 1rem; background: var(--bg-color); color: var(--text-primary);"
+                        >
+                        <div id="product-images-list" style="margin-top: 8px; font-size: 0.875rem; color: var(--text-secondary); min-height: 20px;"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="product-logo">
+                            <span class="label-text">Product Logo (Optional)</span>
+                            <span class="label-hint">Logo will be overlaid on the final video (JPEG, PNG, GIF, WebP, SVG)</span>
+                        </label>
+                        <input 
+                            type="file" 
+                            id="product-logo" 
+                            name="product_logo" 
+                            accept="image/jpeg,image/jpg,image/png,image/gif,image/webp,image/svg+xml"
+                            style="width: 100%; padding: 12px; border: 2px solid var(--border-color); border-radius: 8px; font-size: 1rem; background: var(--bg-color); color: var(--text-primary);"
+                        >
+                        <div id="product-logo-name" style="margin-top: 8px; font-size: 0.875rem; color: var(--text-secondary); min-height: 20px;"></div>
+                    </div>
+
+                    <button type="submit" class="btn-primary" id="submit-btn">
+                        <span class="btn-text">Create Reel</span>
+                        <span class="btn-loader" style="display: none;">⏳ Processing...</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Status Section -->
+            <div id="status-section" class="card" style="display: none;">
+                <h2>Processing Status</h2>
+                <div id="status-content">
+                    <div class="status-item">
+                        <span class="status-label">Status:</span>
+                        <span id="status-text" class="status-value">Processing...</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div id="progress-fill" class="progress-fill"></div>
+                    </div>
+                    <div id="status-message" class="status-message"></div>
+                    <div id="status-download-original" class="result-actions" style="margin-top: 16px; display: none;">
+                        <a id="download-original-btn-status" class="btn-secondary" download>📥 Download original video</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Result Section -->
+            <div id="result-section" class="card" style="display: none;">
+                <h2>Your Reel is Ready! 🎉</h2>
+                <div id="result-content">
+                    <div class="video-preview">
+                        <video id="result-video" controls style="display: none;">
+                            Your browser does not support the video tag.
+                        </video>
+                        <div id="video-placeholder" class="video-placeholder">
+                            <p>Video will appear here</p>
+                        </div>
+                    </div>
+                    <div class="result-actions">
+                        <a id="download-btn" class="btn-primary" download>
+                            📥 Download Video
+                        </a>
+                        <a id="download-original-btn-result" class="btn-secondary" download style="display: none;">📥 Download original video</a>
+                        <button class="btn-secondary" onclick="resetForm()">
+                            Create Another Reel
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Error Section -->
+            <div id="error-section" class="card error-card" style="display: none;">
+                <h2>❌ Error</h2>
+                <div id="error-message" class="error-message"></div>
+                <button class="btn-secondary" onclick="resetForm()">Try Again</button>
+            </div>
+        </main>
+
+        <footer>
+            <p>Built with FastAPI & OpenAI • Style extraction, not content copying</p>
+        </footer>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
+
+
